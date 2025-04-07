@@ -10,6 +10,13 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
+      - name: Ensure we are on the release branch
+        run: |
+          if [ "${GITHUB_REF##*/}" != "release" ]; then
+            echo "This workflow must run on the 'release' branch."
+            exit 1
+          fi
+
       - name: Build release
         run: |
           make apoena
@@ -19,8 +26,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: release
-          name: Release - release
+          tag_name: release-${{ github.run_number }}
+          name: ${{ github.run_number }}
           generate_release_notes: true
           prerelease: true
           files: |
